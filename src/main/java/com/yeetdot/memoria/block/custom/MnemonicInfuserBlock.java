@@ -41,11 +41,6 @@ public class MnemonicInfuserBlock extends BlockWithEntity implements BlockEntity
     }
 
     @Override
-    protected BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
-    }
-
-    @Override
     protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
 //        BlockEntity blockEntity = world.getBlockEntity(pos);
 //        if(blockEntity instanceof MnemonicInfuserBlockEntity) {
