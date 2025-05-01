@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "minecraft:quartz",
+  "result": {
+    "count": 1,
+    "id": "memoria:quartz_ball"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "D": "minecraft:diamond_block",
+    "E": "minecraft:echo_shard",
+    "M": "memoria:memory_shard",
+    "O": "minecraft:obsidian",
+    "Q": "minecraft:quartz_block"
+  },
+  "pattern": [
+    "EAE",
+    "QMQ",
+    "ODO"
+  ],
+  "result": {
+    "count": 1,
+    "id": "memoria:mnemonic_infuser"
+  }
+}
