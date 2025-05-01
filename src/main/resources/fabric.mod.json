@@ -18,6 +18,9 @@
 		"main": [
 			"com.yeetdot.memoria.Memoria"
 		],
+		"client": [
+			"com.yeetdot.memoria.MemoriaClient"
+		],
 		"fabric-datagen": [
 			"com.yeetdot.memoria.MemoriaDataGenerator"
 		]
