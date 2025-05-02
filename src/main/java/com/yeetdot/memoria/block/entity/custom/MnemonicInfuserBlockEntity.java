@@ -9,21 +9,54 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.screen.PropertyDelegate;
+import net.minecraft.text.Text;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class MnemonicInfuserBlockEntity extends PedestalBlockEntity{
+public class MnemonicInfuserBlockEntity extends BlockEntity implements Pedestal{
     private int progress = 0;
     private int maxProgress = 100;
-    private List<ItemStack> nearbyPedestalContents = new ArrayList<>();
+    private final List<ItemStack> nearbyPedestalContents = new ArrayList<>();
+    private float rotation;
+    private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
+    protected final PropertyDelegate propertyDelegate;
 
     public MnemonicInfuserBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.MNEMONIC_INFUSER_BLOCK_ENTITY, pos, state);
+        this.propertyDelegate = new PropertyDelegate() {
+            @Override
+            public int get(int index) {
+                return switch (index) {
+                    case 0 -> MnemonicInfuserBlockEntity.this.progress;
+                    case 1 -> MnemonicInfuserBlockEntity.this.maxProgress;
+                    default -> 0;
+                };
+            }
+
+            @Override
+            public void set(int index, int value) {
+                switch (index) {
+                    case 0: MnemonicInfuserBlockEntity.this.progress = value;
+                    case 1: MnemonicInfuserBlockEntity.this.maxProgress = value;
+                }
+            }
+
+            @Override
+            public int size() {
+                return 2;
+            }
+        };
     }
 
     @Override
@@ -31,19 +64,20 @@ public class MnemonicInfuserBlockEntity extends PedestalBlockEntity{
         super.writeNbt(nbt, registries);
         Inventories.writeNbt(nbt, inventory, registries);
         nbt.putInt("mnemonic_infuser.progress", progress);
-        nbt.putInt("mnemonic_infuser.max_progress", progress);
     }
 
     @Override
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
         Inventories.readNbt(nbt, inventory, registries);
         progress = nbt.getInt("mnemonic_infuser.progress").get();
-        maxProgress = nbt.getInt("mnemonic_infuser.max_progress").get();
         super.readNbt(nbt, registries);
     }
 
     public void tick(World world, BlockPos pos, BlockState state) {
         if (hasRecipe(world)) {
+            if (getCurrentRecipe(world).isPresent()) {
+                this.maxProgress = getCurrentRecipe(world).get().value().duration();
+            }
             increaseCraftingProgress();
             markDirty(world, pos, state);
 
@@ -54,18 +88,22 @@ public class MnemonicInfuserBlockEntity extends PedestalBlockEntity{
         } else {
             resetProgress();
         }
+
+        world.getServer().sendMessage(Text.of(progress + " " + maxProgress + " " + hasRecipe(world) + " " + hasFinishedCrafting()));
     }
 
     private void craftItem(World world) {
         Optional<RecipeEntry<MnemonicInfuserRecipe>> recipe = getCurrentRecipe(world);
-        this.maxProgress = recipe.get().value().duration();
-        ItemStack result = recipe.get().value().output();
-        this.removeStack(0);
-        this.setStack(0, new ItemStack(result.getItem()));
+        if (recipe.isPresent()){
+            ItemStack result = recipe.get().value().output();
+            this.removeStack(0);
+            this.setStack(0, new ItemStack(result.getItem()));
+        }
     }
 
     private void resetProgress() {
         this.progress = 0;
+        this.nearbyPedestalContents.clear();
     }
 
     private boolean hasFinishedCrafting() {
@@ -82,7 +120,7 @@ public class MnemonicInfuserBlockEntity extends PedestalBlockEntity{
     }
 
     public String test () {
-        return getItems().getFirst().toString();
+        return this.getItems().getFirst().toString();
     }
 
     public List<ItemStack> getNearbyPedestalContents(World world) {
@@ -110,6 +148,31 @@ public class MnemonicInfuserBlockEntity extends PedestalBlockEntity{
     }
 
     private Optional<RecipeEntry<MnemonicInfuserRecipe>> getCurrentRecipe(World world) {
-        return this.getWorld().getServer().getRecipeManager().getFirstMatch(ModRecipes.MNEMONIC_INFUSER_TYPE, new MnemonicInfuserRecipeInput(inventory.getFirst(), getNearbyPedestalContents(world)), this.getWorld());
+        return this.getWorld().getServer().getRecipeManager().getFirstMatch(ModRecipes.MNEMONIC_INFUSER_TYPE, new MnemonicInfuserRecipeInput(inventory.getFirst(), getNearbyPedestalContents(world)), world);
+    }
+
+    @Override
+    public float getRotation() {
+        rotation += 0.5f;
+        if (rotation >= 360) {
+            rotation = 0;
+        }
+        return rotation;
+    }
+
+    @Override
+    public DefaultedList<ItemStack> getItems() {
+        return inventory;
+    }
+
+    @Nullable
+    @Override
+    public Packet<ClientPlayPacketListener> toUpdatePacket() {
+        return BlockEntityUpdateS2CPacket.create(this);
+    }
+
+    @Override
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
+        return createNbt(registries);
     }
 }

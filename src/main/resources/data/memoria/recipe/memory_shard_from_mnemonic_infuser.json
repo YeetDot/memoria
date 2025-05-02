@@ -1,0 +1,19 @@
+{
+  "type": "memoria:mnemonic_infuser",
+  "main_input": "minecraft:echo_shard",
+  "ingredients": [
+    "minecraft:loom",
+    "minecraft:loom",
+    "minecraft:loom",
+    "minecraft:loom",
+    "minecraft:loom",
+    "minecraft:loom",
+    "minecraft:loom",
+    "minecraft:loom"
+  ],
+  "duration": 100,
+  "result": {
+    "count": 1,
+    "id": "memoria:memory_shard"
+  }
+}

@@ -1,6 +1,7 @@
 package com.yeetdot.memoria.item;
 
 import com.yeetdot.memoria.Memoria;
+import com.yeetdot.memoria.item.custom.MemoryShardItem;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;

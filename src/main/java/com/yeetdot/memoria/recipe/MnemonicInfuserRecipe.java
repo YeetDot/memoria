@@ -62,7 +62,7 @@ public record MnemonicInfuserRecipe(Ingredient mainInput, List<Ingredient> ingre
 
     @Override
     public IngredientPlacement getIngredientPlacement() {
-        return null;
+        return IngredientPlacement.forShapeless(this.ingredients);
     }
 
     @Override
@@ -72,7 +72,7 @@ public record MnemonicInfuserRecipe(Ingredient mainInput, List<Ingredient> ingre
 
     public static class Serializer implements RecipeSerializer<MnemonicInfuserRecipe> {
         private static final MapCodec<MnemonicInfuserRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                Ingredient.CODEC.fieldOf("mainInput").forGetter(recipe -> recipe.mainInput),
+                Ingredient.CODEC.fieldOf("main_input").forGetter(recipe -> recipe.mainInput),
                 Ingredient.CODEC.listOf(1, 8).fieldOf("ingredients").forGetter(recipe -> recipe.ingredients),
                 Codec.INT.fieldOf("duration").forGetter(recipe -> recipe.duration),
                 ItemStack.VALIDATED_CODEC.fieldOf("result").forGetter(recipe -> recipe.output)
