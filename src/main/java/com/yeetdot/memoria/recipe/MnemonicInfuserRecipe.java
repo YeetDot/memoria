@@ -3,6 +3,7 @@ package com.yeetdot.memoria.recipe;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -10,12 +11,10 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public record MnemonicInfuserRecipe(Ingredient mainInput, List<Ingredient> ingredients, int duration,
                                     ItemStack output) implements Recipe<MnemonicInfuserRecipeInput> {
@@ -24,7 +23,6 @@ public record MnemonicInfuserRecipe(Ingredient mainInput, List<Ingredient> ingre
     public boolean matches(MnemonicInfuserRecipeInput input, World world) {
         if (!mainInput.test(input.mainInput())) return false;
         if (input.subInputs().size() != ingredients.size()) return false;
-
         List<Ingredient> requiredSubs = new ArrayList<>(ingredients);
         for (ItemStack stack : input.subInputs()) {
             boolean matched = false;

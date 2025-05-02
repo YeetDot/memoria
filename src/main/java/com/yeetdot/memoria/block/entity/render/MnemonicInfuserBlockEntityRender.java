@@ -1,5 +1,6 @@
 package com.yeetdot.memoria.block.entity.render;
 
+import com.yeetdot.memoria.block.entity.custom.MnemonicInfuserBlockEntity;
 import com.yeetdot.memoria.block.entity.custom.PedestalBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LightmapTextureManager;
@@ -17,13 +18,13 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
-public class MnemonicInfuserBlockEntityRender implements BlockEntityRenderer<PedestalBlockEntity> {
+public class MnemonicInfuserBlockEntityRender implements BlockEntityRenderer<MnemonicInfuserBlockEntity> {
     public MnemonicInfuserBlockEntityRender(BlockEntityRendererFactory.Context context) {
 
     }
 
     @Override
-    public void render(PedestalBlockEntity entity, float tickProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Vec3d cameraPos) {
+    public void render(MnemonicInfuserBlockEntity entity, float tickProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Vec3d cameraPos) {
         ItemRenderer itemRenderer = MinecraftClient.getInstance().getItemRenderer();
         ItemStack stack = entity.getStack(0);
 

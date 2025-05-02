@@ -4,6 +4,7 @@ import com.yeetdot.memoria.block.entity.ImplementedInventory;
 import com.yeetdot.memoria.block.entity.ModBlockEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -18,6 +19,10 @@ import org.jetbrains.annotations.Nullable;
 public class PedestalBlockEntity extends BlockEntity implements ImplementedInventory {
     protected final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
     private float rotation = 0;
+
+    public PedestalBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
+    }
 
     public PedestalBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.PEDESTAL_BLOCK_ENTITY, pos, state);

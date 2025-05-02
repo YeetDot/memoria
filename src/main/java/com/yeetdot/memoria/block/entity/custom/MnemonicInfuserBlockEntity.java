@@ -1,20 +1,17 @@
 package com.yeetdot.memoria.block.entity.custom;
 
+import com.yeetdot.memoria.block.entity.ModBlockEntities;
 import com.yeetdot.memoria.recipe.MnemonicInfuserRecipe;
 import com.yeetdot.memoria.recipe.MnemonicInfuserRecipeInput;
 import com.yeetdot.memoria.recipe.ModRecipes;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.inventory.Inventories;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 
@@ -26,7 +23,7 @@ public class MnemonicInfuserBlockEntity extends PedestalBlockEntity{
     private List<ItemStack> nearbyPedestalContents = new ArrayList<>();
 
     public MnemonicInfuserBlockEntity(BlockPos pos, BlockState state) {
-        super(pos, state);
+        super(ModBlockEntities.MNEMONIC_INFUSER_BLOCK_ENTITY, pos, state);
     }
 
     @Override
@@ -46,12 +43,12 @@ public class MnemonicInfuserBlockEntity extends PedestalBlockEntity{
     }
 
     public void tick(World world, BlockPos pos, BlockState state) {
-        if (hasRecipe()) {
+        if (hasRecipe(world)) {
             increaseCraftingProgress();
             markDirty(world, pos, state);
 
             if (hasFinishedCrafting()) {
-                craftItem();
+                craftItem(world);
                 resetProgress();
             }
         } else {
@@ -59,8 +56,8 @@ public class MnemonicInfuserBlockEntity extends PedestalBlockEntity{
         }
     }
 
-    private void craftItem() {
-        Optional<RecipeEntry<MnemonicInfuserRecipe>> recipe = getCurrentRecipe();
+    private void craftItem(World world) {
+        Optional<RecipeEntry<MnemonicInfuserRecipe>> recipe = getCurrentRecipe(world);
         this.maxProgress = recipe.get().value().duration();
         ItemStack result = recipe.get().value().output();
         this.removeStack(0);
@@ -69,7 +66,6 @@ public class MnemonicInfuserBlockEntity extends PedestalBlockEntity{
 
     private void resetProgress() {
         this.progress = 0;
-        this.nearbyPedestalContents.clear();
     }
 
     private boolean hasFinishedCrafting() {
@@ -80,37 +76,40 @@ public class MnemonicInfuserBlockEntity extends PedestalBlockEntity{
         this.progress++;
     }
 
-    private boolean hasRecipe() {
-        Optional<RecipeEntry<MnemonicInfuserRecipe>> recipe = getCurrentRecipe();
+    private boolean hasRecipe(World world) {
+        Optional<RecipeEntry<MnemonicInfuserRecipe>> recipe = getCurrentRecipe(world);
         return recipe.isPresent();
     }
 
+    public String test () {
+        return getItems().getFirst().toString();
+    }
 
+    public List<ItemStack> getNearbyPedestalContents(World world) {
+            BlockPos pos = this.getPos();
+            List<Vec3i> poses = List.of(
+                    new Vec3i(3, 0, 0),
+                    new Vec3i(2, 0, 2),
+                    new Vec3i(0, 0, 3),
+                    new Vec3i(-2, 0, 2),
+                    new Vec3i(-3, 0, 0),
+                    new Vec3i(-2, 0, -2),
+                    new Vec3i(0, 0, -3),
+                    new Vec3i(2, 0, -2));
 
-    private Optional<RecipeEntry<MnemonicInfuserRecipe>> getCurrentRecipe() {
-        World world1 = this.getWorld();
-        assert world1 != null;
-        MinecraftServer server = world1.getServer();
-        BlockPos pos = this.getPos();
-        List<Vec3i> poses = List.of(
-                new Vec3i(2, 0, 0),
-                new Vec3i(1, 0, 1),
-                new Vec3i(0, 0, 2),
-                new Vec3i(-1, 0, 1),
-                new Vec3i(-2, 0, 0),
-                new Vec3i(-1, 0, -1),
-                new Vec3i(0, 0, -2),
-                new Vec3i(1, 0, -1));
-        if (server != null) {
             for (int i = 0; i < 8; i++) {
-                BlockEntity entity = world1.getBlockEntity(pos.add(poses.get(i)));
+                BlockEntity entity = world.getBlockEntity(pos.add(poses.get(i)));
                 if (entity instanceof PedestalBlockEntity pedestal) {
                     nearbyPedestalContents.add(pedestal.getItems().getFirst());
                 }
             }
-//            nearbyPedestalContents.sort(Comparator.comparing((itemStack -> itemStack.getItem().toString())));
-        }
-        assert server != null;
-        return server.getRecipeManager().getFirstMatch(ModRecipes.MNEMONIC_INFUSER_TYPE, new MnemonicInfuserRecipeInput(inventory.getFirst(), nearbyPedestalContents), this.getWorld());
+//          nearbyPedestalContents.sort(Comparator.comparing((itemStack -> itemStack.getItem().toString())));
+
+
+        return nearbyPedestalContents;
+    }
+
+    private Optional<RecipeEntry<MnemonicInfuserRecipe>> getCurrentRecipe(World world) {
+        return this.getWorld().getServer().getRecipeManager().getFirstMatch(ModRecipes.MNEMONIC_INFUSER_TYPE, new MnemonicInfuserRecipeInput(inventory.getFirst(), getNearbyPedestalContents(world)), this.getWorld());
     }
 }
