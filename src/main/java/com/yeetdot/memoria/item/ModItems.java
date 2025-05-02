@@ -13,6 +13,7 @@ import java.util.function.Function;
 public class ModItems {
     public static final Item QUARTZ_BALL = register("quartz_ball", Item::new, new Item.Settings().maxCount(1));
     public static final Item MEMORY_SHARD = register("memory_shard", Item::new, new Item.Settings());
+    public static final Item QUARTZ_RING = register("quartz_ring", Item::new, new Item.Settings().maxDamage(64));
 
 
     private static Item register(String name, Function<Item.Settings, Item> factory, Item.Settings settings) {

@@ -17,8 +17,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
-public class MnemonicInfuserBlockEntityRender implements BlockEntityRenderer<PedestalBlockEntity> {
-    public MnemonicInfuserBlockEntityRender(BlockEntityRendererFactory.Context context) {
+public class MnemonicPedestalBlockEntityRender implements BlockEntityRenderer<PedestalBlockEntity> {
+    public MnemonicPedestalBlockEntityRender(BlockEntityRendererFactory.Context context) {
 
     }
 

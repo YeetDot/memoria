@@ -2,6 +2,7 @@ package com.yeetdot.memoria.block;
 
 import com.yeetdot.memoria.Memoria;
 import com.yeetdot.memoria.block.custom.MnemonicInfuserBlock;
+import com.yeetdot.memoria.block.custom.MnemonicPedestalBlock;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -17,7 +18,7 @@ import java.util.function.Function;
 
 public class ModBlocks {
     public static final Block MNEMONIC_INFUSER = register("mnemonic_infuser", MnemonicInfuserBlock::new, AbstractBlock.Settings.copy(Blocks.ENCHANTING_TABLE).nonOpaque());
-    public static final Block MNEMONIC_PEDESTAL = register("mnemonic_pedestal", Block::new, AbstractBlock.Settings.create());
+    public static final Block MNEMONIC_PEDESTAL = register("mnemonic_pedestal", MnemonicPedestalBlock::new, AbstractBlock.Settings.copy(Blocks.ENCHANTING_TABLE).nonOpaque());
 
     private static Block register(String name, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings settings, boolean createItem) {
         Block block = factory.apply(settings.registryKey(RegistryKey.of(RegistryKeys.BLOCK, Identifier.of(Memoria.MOD_ID, name))));

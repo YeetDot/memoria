@@ -1,9 +1,13 @@
 package com.yeetdot.memoria;
 
 import com.yeetdot.memoria.block.ModBlocks;
+import com.yeetdot.memoria.block.component.ModDataComponentTypes;
 import com.yeetdot.memoria.block.entity.ModBlockEntities;
 import com.yeetdot.memoria.item.ModItemGroups;
 import com.yeetdot.memoria.item.ModItems;
+import com.yeetdot.memoria.recipe.ModRecipes;
+import com.yeetdot.memoria.util.MemoryShardDropHandler;
+import com.yeetdot.memoria.util.TooltipHandler;
 import net.fabricmc.api.ModInitializer;
 
 import org.slf4j.Logger;
@@ -21,5 +25,10 @@ public class Memoria implements ModInitializer {
 		ModBlocks.registerBlocks();
 		ModItemGroups.registerItemGroups();
 		ModBlockEntities.registerBlockEntityTypes();
+		ModDataComponentTypes.registerDataComponentTypes();
+		ModRecipes.registerRecipes();
+
+		MemoryShardDropHandler.register();
+		TooltipHandler.register();
 	}
 }
