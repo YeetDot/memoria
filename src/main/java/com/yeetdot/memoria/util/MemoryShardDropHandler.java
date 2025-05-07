@@ -1,6 +1,6 @@
 package com.yeetdot.memoria.util;
 
-import com.yeetdot.memoria.block.component.ModDataComponentTypes;
+import com.yeetdot.memoria.component.ModDataComponentTypes;
 import com.yeetdot.memoria.item.ModItems;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.minecraft.entity.attribute.EntityAttributes;

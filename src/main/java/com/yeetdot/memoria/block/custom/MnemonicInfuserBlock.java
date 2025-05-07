@@ -4,6 +4,8 @@ import com.mojang.serialization.MapCodec;
 import com.yeetdot.memoria.block.entity.ModBlockEntities;
 import com.yeetdot.memoria.block.entity.custom.MnemonicInfuserBlockEntity;
 import com.yeetdot.memoria.block.entity.custom.PedestalBlockEntity;
+import com.yeetdot.memoria.screen.custom.MnemonicInfuserScreenHandler;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -12,6 +14,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -38,29 +41,32 @@ public class MnemonicInfuserBlock extends AbstractPedestalBlock {
     @Override
     protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (world.getBlockEntity(pos) instanceof MnemonicInfuserBlockEntity blockEntity) {
-            if (blockEntity.isEmpty() && !stack.isEmpty()) {
-                blockEntity.setStack(0, stack.copyWithCount(1));
-                world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1f, 2f);
-                stack.decrement(1);
-
-                blockEntity.markDirty();
-                world.updateListeners(pos, state, state, 0);
-            } else if (!blockEntity.isEmpty() && !player.isSneaking()) {
-                ItemStack stack1 = blockEntity.getStack(0);
-                if (stack.isEmpty()) {
-                    player.setStackInHand(hand, stack1);
-                } else {
-                    dropStack(world, pos, Direction.UP, stack1);
-                }
-                world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1f, 1f);
-                blockEntity.clear();
-
-                blockEntity.markDirty();
-                world.updateListeners(pos, state, state, 0);
+//            if (blockEntity.isEmpty() && !stack.isEmpty()) {
+//                blockEntity.setStack(0, stack.copyWithCount(1));
+//                world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1f, 2f);
+//                stack.decrement(1);
+//
+//                blockEntity.markDirty();
+//                world.updateListeners(pos, state, state, 0);
+//            } else if (!blockEntity.isEmpty() && !player.isSneaking()) {
+//                ItemStack stack1 = blockEntity.getStack(0);
+//                if (stack.isEmpty()) {
+//                    player.setStackInHand(hand, stack1);
+//                } else {
+//                    dropStack(world, pos, Direction.UP, stack1);
+//                }
+//                world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1f, 1f);
+//                blockEntity.clear();
+//
+//                blockEntity.markDirty();
+//                world.updateListeners(pos, state, state, 0);
+//            }
+//
+//            player.sendMessage(Text.of(blockEntity.getNearbyPedestalContents(world).toString()), false);
+//            player.sendMessage(Text.of(blockEntity.test()), false);
+            if (!world.isClient) {
+                player.openHandledScreen(blockEntity);
             }
-
-            player.sendMessage(Text.of(blockEntity.getNearbyPedestalContents(world).toString()), false);
-            player.sendMessage(Text.of(blockEntity.test()), false);
         }
 
         return ActionResult.SUCCESS;

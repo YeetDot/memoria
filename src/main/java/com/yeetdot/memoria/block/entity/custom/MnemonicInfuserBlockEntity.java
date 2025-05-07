@@ -4,8 +4,12 @@ import com.yeetdot.memoria.block.entity.ModBlockEntities;
 import com.yeetdot.memoria.recipe.MnemonicInfuserRecipe;
 import com.yeetdot.memoria.recipe.MnemonicInfuserRecipeInput;
 import com.yeetdot.memoria.recipe.ModRecipes;
+import com.yeetdot.memoria.screen.custom.MnemonicInfuserScreenHandler;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -15,6 +19,8 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.PropertyDelegate;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
@@ -24,12 +30,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class MnemonicInfuserBlockEntity extends BlockEntity implements Pedestal{
+public class MnemonicInfuserBlockEntity extends BlockEntity implements Pedestal, ExtendedScreenHandlerFactory<BlockPos> {
     private int progress = 0;
     private int maxProgress = 100;
     private final List<ItemStack> nearbyPedestalContents = new ArrayList<>();
     private float rotation;
-    private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
+    private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(10, ItemStack.EMPTY);
     protected final PropertyDelegate propertyDelegate;
 
     public MnemonicInfuserBlockEntity(BlockPos pos, BlockState state) {
@@ -79,7 +85,6 @@ public class MnemonicInfuserBlockEntity extends BlockEntity implements Pedestal{
                 this.maxProgress = getCurrentRecipe(world).get().value().duration();
             }
             increaseCraftingProgress();
-            markDirty(world, pos, state);
 
             if (hasFinishedCrafting()) {
                 craftItem(world);
@@ -88,8 +93,6 @@ public class MnemonicInfuserBlockEntity extends BlockEntity implements Pedestal{
         } else {
             resetProgress();
         }
-
-        world.getServer().sendMessage(Text.of(progress + " " + maxProgress + " " + hasRecipe(world) + " " + hasFinishedCrafting()));
     }
 
     private void craftItem(World world) {
@@ -174,5 +177,21 @@ public class MnemonicInfuserBlockEntity extends BlockEntity implements Pedestal{
     @Override
     public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
         return createNbt(registries);
+    }
+
+    @Override
+    public BlockPos getScreenOpeningData(ServerPlayerEntity serverPlayerEntity) {
+        return pos;
+    }
+
+    @Override
+    public Text getDisplayName() {
+        return Text.literal("Mnemonic Infuser");
+    }
+
+    @Nullable
+    @Override
+    public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
+        return new MnemonicInfuserScreenHandler(syncId, playerInventory, this.pos);
     }
 }

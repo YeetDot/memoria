@@ -1,4 +1,4 @@
-package com.yeetdot.memoria.block.component;
+package com.yeetdot.memoria.component;
 
 import com.yeetdot.memoria.Memoria;
 import net.minecraft.component.ComponentType;
